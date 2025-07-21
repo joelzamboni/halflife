@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Half-Life Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Half-Life Calculator</h1>
+            <p>Calculate and visualize substance decay and accumulation patterns</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('single')">Single Dose</button>
+            <button class="tab-button" onclick="showTab('repeated')">Repeated Dosing</button>
+        </div>
+
+        <div id="single" class="tab-content active">
+            <h2>Single Dose Calculator</h2>
+            <form id="single-dose-form">
+                <div class="form-group">
+                    <label for="initial-dose">Initial Dose (mg)</label>
+                    <input type="number" id="initial-dose" value="500" step="any" required>
+                </div>
+                <div class="form-group">
+                    <label for="half-life">Half-Life (hours)</label>
+                    <input type="number" id="half-life" value="2" step="any" required>
+                </div>
+                <div class="form-group">
+                    <label for="time-period">Time Period (hours)</label>
+                    <input type="number" id="time-period" value="24" step="any" required>
+                </div>
+                <button type="submit">Calculate</button>
+            </form>
+
+            <div id="single-results" class="results">
+                <h3>Results</h3>
+                <div id="single-results-text"></div>
+            </div>
+        </div>
+
+        <div id="repeated" class="tab-content">
+            <h2>Repeated Dosing Calculator</h2>
+            <form id="repeated-dose-form">
+                <div class="form-group">
+                    <label for="dose-amount">Dose Amount (mg)</label>
+                    <input type="number" id="dose-amount" value="20" step="any" required>
+                </div>
+                <div class="form-group">
+                    <label for="dose-half-life">Half-Life (hours)</label>
+                    <input type="number" id="dose-half-life" value="36" step="any" required>
+                </div>
+                <div class="form-group">
+                    <label for="dose-interval">Dosing Interval (hours)</label>
+                    <input type="number" id="dose-interval" value="24" step="any" required>
+                </div>
+                <div class="form-group">
+                    <label for="duration">Duration to Simulate (days)</label>
+                    <input type="number" id="duration" value="14" step="any" required>
+                </div>
+                <button type="submit">Calculate</button>
+            </form>
+
+            <div id="repeated-results" class="results">
+                <h3>Results</h3>
+                <div id="repeated-results-text"></div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="concentration-chart"></canvas>
+            </div>
+            <div class="chart-controls">
+                <small>Use mouse wheel to zoom, drag to pan. Mobile: pinch to zoom, drag to pan.</small>
+                <button onclick="resetZoom()">Reset Zoom</button>
+            </div>
+        </div>
+
+        <div class="examples">
+            <h3>Example Scenarios</h3>
+            <button onclick="loadExample('short')">Short Half-Life (2h)</button>
+            <button onclick="loadExample('medium')">Medium Half-Life (36h)</button>
+            <button onclick="loadExample('long')">Long Half-Life (50d)</button>
+        </div>
+
+        <footer>
+            <p>Open source half-life calculator. For educational purposes only.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
