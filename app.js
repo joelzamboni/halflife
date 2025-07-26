@@ -4,6 +4,13 @@ function calculateHalfLife(initialDose, halfLife, time) {
     return initialDose * Math.pow(0.5, time / halfLife);
 }
 
+function calculateEliminationTime(halfLife, percentEliminated) {
+    // Time = -log2(remaining fraction) × half-life
+    const remainingFraction = (100 - percentEliminated) / 100;
+    const halfLives = -Math.log2(remainingFraction);
+    return halfLives * halfLife;
+}
+
 function generateSingleDoseData(initialDose, halfLife, duration) {
     const data = [];
     const timePoints = Math.min(duration * 10, 1000);
@@ -55,6 +62,23 @@ function generateRepeatedDoseData(dose, halfLife, dosingInterval, duration) {
         data.push({
             time: currentTime,
             concentration: totalConcentration
+        });
+    }
+    
+    return data;
+}
+
+function generateEliminationData(initialAmount, halfLife, duration) {
+    const data = [];
+    const timePoints = Math.min(duration * 10, 1000);
+    const interval = duration / timePoints;
+    
+    for (let i = 0; i <= timePoints; i++) {
+        const time = i * interval;
+        const concentration = calculateHalfLife(initialAmount, halfLife, time);
+        data.push({
+            time: time,
+            concentration: concentration
         });
     }
     
@@ -212,6 +236,13 @@ document.getElementById('single-dose-form').addEventListener('submit', function(
     const finalPercentage = (finalAmount / initialDose * 100).toFixed(1);
     resultsDiv.innerHTML += `<br><strong>Final amount at ${timePeriod} hours: ${finalAmount.toFixed(2)} mg (${finalPercentage}%)</strong>`;
     
+    // Add elimination time info
+    const elim99 = calculateEliminationTime(halfLife, 99);
+    const elim999 = calculateEliminationTime(halfLife, 99.9);
+    resultsDiv.innerHTML += `<br><br><strong>Elimination times from single dose:</strong><br>`;
+    resultsDiv.innerHTML += `99% eliminated: ${elim99.toFixed(1)} hours (${(elim99/24).toFixed(1)} days)<br>`;
+    resultsDiv.innerHTML += `99.9% eliminated: ${elim999.toFixed(1)} hours (${(elim999/24).toFixed(1)} days)`;
+    
     plotConcentration(data, `Single Dose Decay - ${initialDose}mg with ${halfLife}h half-life`);
 });
 
@@ -239,9 +270,56 @@ document.getElementById('repeated-dose-form').addEventListener('submit', functio
             Time to reach steady state: <span class="highlight">${steadyState.time.toFixed(1)} hours (${(steadyState.time/24).toFixed(1)} days)</span><br>
             Accumulation factor: <span class="highlight">${(steadyState.avg / dose).toFixed(2)}x</span>
         </div>
+        <br>
+        <strong>Elimination after stopping:</strong><br>
+        Time to 99% elimination from max level: <span class="highlight">${calculateEliminationTime(halfLife, 99).toFixed(1)} hours (${(calculateEliminationTime(halfLife, 99)/24).toFixed(1)} days)</span><br>
+        Time to 99.9% elimination from max level: <span class="highlight">${calculateEliminationTime(halfLife, 99.9).toFixed(1)} hours (${(calculateEliminationTime(halfLife, 99.9)/24).toFixed(1)} days)</span>
     `;
     
     plotConcentration(data, `Repeated Dosing - ${dose}mg every ${interval}h, ${halfLife}h half-life`);
+});
+
+document.getElementById('elimination-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const initialAmount = parseFloat(document.getElementById('elim-initial').value);
+    const halfLife = parseFloat(document.getElementById('elim-half-life').value);
+    const threshold = parseFloat(document.getElementById('elim-threshold').value);
+    
+    const eliminationTime = calculateEliminationTime(halfLife, threshold);
+    const halfLives = eliminationTime / halfLife;
+    const remainingAmount = initialAmount * (100 - threshold) / 100;
+    
+    // Generate data for visualization
+    const duration = eliminationTime * 1.2; // Show a bit more than elimination time
+    const data = generateEliminationData(initialAmount, halfLife, duration);
+    
+    const resultsDiv = document.getElementById('elimination-results-text');
+    resultsDiv.innerHTML = `
+        Initial amount: ${initialAmount} mg<br>
+        Half-life: ${halfLife} hours<br>
+        Target: ${threshold}% eliminated<br><br>
+        <div class="elimination-info">
+            <strong>Time to ${threshold}% elimination:</strong><br>
+            <span class="highlight">${eliminationTime.toFixed(1)} hours</span> 
+            (${(eliminationTime/24).toFixed(1)} days)<br>
+            This equals <span class="highlight">${halfLives.toFixed(2)} half-lives</span><br><br>
+            
+            <strong>Amount remaining after elimination:</strong><br>
+            <span class="highlight">${remainingAmount.toFixed(3)} mg</span><br><br>
+            
+            <strong>Common elimination milestones:</strong><br>
+            50% eliminated: ${(halfLife).toFixed(1)} hours (1 half-life)<br>
+            75% eliminated: ${(halfLife * 2).toFixed(1)} hours (2 half-lives)<br>
+            87.5% eliminated: ${(halfLife * 3).toFixed(1)} hours (3 half-lives)<br>
+            93.75% eliminated: ${(halfLife * 4).toFixed(1)} hours (4 half-lives)<br>
+            96.88% eliminated: ${(halfLife * 5).toFixed(1)} hours (5 half-lives)<br>
+            99% eliminated: ${calculateEliminationTime(halfLife, 99).toFixed(1)} hours (${(calculateEliminationTime(halfLife, 99)/halfLife).toFixed(2)} half-lives)<br>
+            99.9% eliminated: ${calculateEliminationTime(halfLife, 99.9).toFixed(1)} hours (${(calculateEliminationTime(halfLife, 99.9)/halfLife).toFixed(2)} half-lives)
+        </div>
+    `;
+    
+    plotConcentration(data, `Elimination from ${initialAmount}mg - ${halfLife}h half-life`);
 });
 
 function loadExample(type) {
@@ -251,11 +329,14 @@ function loadExample(type) {
                 document.getElementById('initial-dose').value = 500;
                 document.getElementById('half-life').value = 2;
                 document.getElementById('time-period').value = 24;
-            } else {
+            } else if (document.getElementById('repeated').classList.contains('active')) {
                 document.getElementById('dose-amount').value = 100;
                 document.getElementById('dose-half-life').value = 2;
                 document.getElementById('dose-interval').value = 6;
                 document.getElementById('duration').value = 3;
+            } else if (document.getElementById('elimination').classList.contains('active')) {
+                document.getElementById('elim-initial').value = 500;
+                document.getElementById('elim-half-life').value = 2;
             }
             break;
         case 'medium':
@@ -263,11 +344,14 @@ function loadExample(type) {
                 document.getElementById('initial-dose').value = 20;
                 document.getElementById('half-life').value = 36;
                 document.getElementById('time-period').value = 168;
-            } else {
+            } else if (document.getElementById('repeated').classList.contains('active')) {
                 document.getElementById('dose-amount').value = 20;
                 document.getElementById('dose-half-life').value = 36;
                 document.getElementById('dose-interval').value = 24;
                 document.getElementById('duration').value = 14;
+            } else if (document.getElementById('elimination').classList.contains('active')) {
+                document.getElementById('elim-initial').value = 48;  // Steady state max from 20mg daily
+                document.getElementById('elim-half-life').value = 36;
             }
             break;
         case 'long':
@@ -275,11 +359,14 @@ function loadExample(type) {
                 document.getElementById('initial-dose').value = 10;
                 document.getElementById('half-life').value = 1200;
                 document.getElementById('time-period').value = 2400;
-            } else {
+            } else if (document.getElementById('repeated').classList.contains('active')) {
                 document.getElementById('dose-amount').value = 10;
                 document.getElementById('dose-half-life').value = 1200;
                 document.getElementById('dose-interval').value = 24;
                 document.getElementById('duration').value = 60;
+            } else if (document.getElementById('elimination').classList.contains('active')) {
+                document.getElementById('elim-initial').value = 173;  // Steady state max from 10mg daily with 50d half-life
+                document.getElementById('elim-half-life').value = 1200;
             }
             break;
     }

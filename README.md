@@ -10,6 +10,7 @@ Visit the live application at: https://joelzamboni.github.io/halflife/
 
 - **Single Dose Calculator**: Calculate how much substance remains after a given time period
 - **Repeated Dosing Calculator**: Model accumulation patterns with regular dosing schedules
+- **Elimination Time Calculator**: Calculate how long a substance remains in the system after stopping
 - **Interactive Visualizations**: Real-time charts showing concentration over time
 - **Steady-State Analysis**: Calculate steady-state concentrations for repeated dosing
 - **Example Presets**: Quick-load common scenarios (short, medium, and long half-lives)
@@ -18,10 +19,11 @@ Visit the live application at: https://joelzamboni.github.io/halflife/
 ## Usage
 
 1. Open `index.html` in a web browser
-2. Choose between "Single Dose" or "Repeated Dosing" tabs
+2. Choose between "Single Dose", "Repeated Dosing", or "Elimination Time" tabs
 3. Enter your parameters:
    - For single dose: initial dose, half-life, and time period
    - For repeated dosing: dose amount, half-life, dosing interval, and duration
+   - For elimination: initial amount in system, half-life, and elimination threshold
 4. Click "Calculate" to see results and visualization
 5. Use example buttons to load preset scenarios
 
@@ -37,6 +39,13 @@ Visit the live application at: https://joelzamboni.github.io/halflife/
 - Shows accumulation factor
 - Estimates time to reach steady state (5 half-lives)
 - Visualizes the sawtooth pattern of peaks and troughs
+- Shows elimination time after stopping
+
+### Elimination Time
+- Calculates time required to eliminate a specific percentage of the substance
+- Shows common elimination milestones (50%, 75%, 87.5%, etc.)
+- Displays the number of half-lives required for elimination
+- Useful for determining when a substance is effectively cleared from the system
 
 ## Examples
 

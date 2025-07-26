@@ -18,6 +18,7 @@
         <div class="tabs">
             <button class="tab-button active" onclick="showTab('single')">Single Dose</button>
             <button class="tab-button" onclick="showTab('repeated')">Repeated Dosing</button>
+            <button class="tab-button" onclick="showTab('elimination')">Elimination Time</button>
         </div>
 
         <div id="single" class="tab-content active">
@@ -69,6 +70,38 @@
             <div id="repeated-results" class="results">
                 <h3>Results</h3>
                 <div id="repeated-results-text"></div>
+            </div>
+        </div>
+
+        <div id="elimination" class="tab-content">
+            <h2>Elimination Time Calculator</h2>
+            <p>Calculate how long a substance remains in the system after the last dose</p>
+            <form id="elimination-form">
+                <div class="form-group">
+                    <label for="elim-initial">Initial Amount in System (mg)</label>
+                    <input type="number" id="elim-initial" value="100" step="any" required>
+                    <small>For steady-state, use the maximum concentration from repeated dosing</small>
+                </div>
+                <div class="form-group">
+                    <label for="elim-half-life">Half-Life (hours)</label>
+                    <input type="number" id="elim-half-life" value="36" step="any" required>
+                </div>
+                <div class="form-group">
+                    <label for="elim-threshold">Elimination Threshold (%)</label>
+                    <select id="elim-threshold">
+                        <option value="90">90% eliminated (10% remaining)</option>
+                        <option value="95">95% eliminated (5% remaining)</option>
+                        <option value="99" selected>99% eliminated (1% remaining)</option>
+                        <option value="99.9">99.9% eliminated (0.1% remaining)</option>
+                        <option value="99.99">99.99% eliminated (0.01% remaining)</option>
+                    </select>
+                </div>
+                <button type="submit">Calculate</button>
+            </form>
+
+            <div id="elimination-results" class="results">
+                <h3>Results</h3>
+                <div id="elimination-results-text"></div>
             </div>
         </div>
 

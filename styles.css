@@ -110,6 +110,27 @@ input[type="number"]:focus {
     border-color: #3498db;
 }
 
+select {
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    background: white;
+    cursor: pointer;
+}
+
+select:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+small {
+    color: #7f8c8d;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
 button[type="submit"] {
     padding: 12px 30px;
     background: #27ae60;
@@ -138,7 +159,7 @@ button[type="submit"]:hover {
     margin-bottom: 15px;
 }
 
-#single-results-text, #repeated-results-text {
+#single-results-text, #repeated-results-text, #elimination-results-text {
     line-height: 1.8;
 }
 
@@ -257,4 +278,12 @@ footer {
     background: #d1ecf1;
     border-radius: 5px;
     border: 1px solid #bee5eb;
+}
+
+.elimination-info {
+    margin-top: 10px;
+    padding: 10px;
+    background: #e7e3f4;
+    border-radius: 5px;
+    border: 1px solid #d3c7e8;
 }
